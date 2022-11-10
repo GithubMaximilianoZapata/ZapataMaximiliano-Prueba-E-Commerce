@@ -184,7 +184,7 @@ const pintarCarrito = () => {
          verCantidad.onchange = (e)=>{  
             let numero = parseInt(e.target.value);
             console.log(numero);                           
-     }; 
+        }; 
              
                                 
         let eliminaProducto = document.createElement("span");
