@@ -237,6 +237,11 @@ const contarCarrito = ()=> {
 
 const guardaStorage = () => localStorage.setItem("carrito", JSON.stringify(carrito));
 
+Swal.fire(
+    'The Internet?',
+    'That thing is still around?',
+    'question'
+  )
 
 
 
