@@ -1,10 +1,3 @@
-//// INICIALIZAR VARIABLES GLOBALES 
-let costoTotalCompra = 0;
-let flag;
-let total;
-let operacion;
-let opcion;
-let cantidad;
 // INSTANCIAR CLASE 
 class Delicatessen {
     constructor(id, img, nombre, descripcion, precio, cantidad) {
@@ -24,10 +17,11 @@ const alfajores = [alfajorChocolateNegro = new Delicatessen(4, "./img/alfajores1
 miniAlfajorChocolateNegro = new Delicatessen(5, "./img/alfajores2-250x250.jpg","Mini Alfajor de Chocolate Negro", "Mini Alfajores cubirtos de chocolate negro rellenos con crema a eleccion.", 130, 1),
 alfajorChocolatePremiun = new Delicatessen(6, "./img/alfajores4-250x250.jpeg", "Alfajor de Chocolate Premiun", "Alfajores bañados en chocolate negro o blanco rellenos de dulce a eleccion." , 190, 1),
 miniAlfajorChocolatePremiun = new Delicatessen(7,  "./img/alfajores3-250x250.jpg", "Mini Alfajor de Chocolate Premiun", "Mini Alfajores cubirtos de chocolate negro rellenos con crema a eleccion.", 140, 1)];
-const bombones = [bombonesChocolateNegro = new Delicatessen(8, "./img/bombones1-250x250.jpg", "Bombones de Chocolate Negro", "Bombones bañados en chocolate negro o blanco con rellenos especiales a eleccion.", 80, 1),
+const bombones = [bombonesChocolateNegro = new Delicatessen(8, "./img/bombones1-250x250.jpg", "Bombones de Chocolate", "Bombones bañados en chocolate negro o blanco con rellenos especiales a eleccion.", 80, 1),
 bombonesChocolatePremiun = new Delicatessen(9, "./img/bombones2-250x250.jpg", "Bombones de Chocolate Premiun", "Bombones bañados en chocolate negro rellenos de dulce de leche o cremas a eleccion.", 90, 1)];
 //CARRITO DE COMRPAS
-let carrito = [];
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
 //DOM PARA CREAR PRODUCTOS DINAMICAMENTE
 //CREAMOS EL GRUPO TORTAS
 const seccTortas = document.getElementById("seccTortas");
@@ -65,10 +59,18 @@ const prductosTorta = tortas.forEach((torta)=> {
         });
         };         
         pintarCarrito();
-        contarCarrito();                                 
+        contarCarrito();
+        guardaStorage();
+        Toastify({
+            text: "Agregado al Carrito",            
+            duration: 2000,
+            style: {
+                background: "rgb(63,94,251)",
+                background: "radial-gradient(circle, rgba(63,94,251,1) 4%, rgba(164,34,131,1) 85%)",                                
+              },            
+            }).showToast();                                          
     };
 });
-
 //CREAMOS EL GRUPO ALFAJORES  
 const seccAlfajores = document.getElementById("seccAlfajores");
 const prductosAlfajores = alfajores.forEach((alfajor)=> {
@@ -103,13 +105,20 @@ const prductosAlfajores = alfajores.forEach((alfajor)=> {
             precio: alfajor.precio,
             cantidad: alfajor.cantidad               
         });
-        };          
+        };             
         pintarCarrito();
-        contarCarrito();                
+        contarCarrito();
+        guardaStorage();
+        Toastify({
+            text: "Agregado al Carrito",            
+            duration: 2000,
+            style: {
+                background: "rgb(63,94,251)",
+                background: "radial-gradient(circle, rgba(63,94,251,1) 4%, rgba(164,34,131,1) 85%)",                                
+              },            
+            }).showToast();                             
     };  
 });
-
-
 //CREAMOS EL GRUPO BOMBONES
 const seccBombones = document.getElementById("seccBombones");
 const prductosBombones = bombones.forEach((bombon)=> {
@@ -131,8 +140,8 @@ const prductosBombones = bombones.forEach((bombon)=> {
     contenido.append(cuerpo);
      //AGREGAR AL ARRAY CARRITO SIN REPETIR PRODUCTOS 
     const agregaBombones = document.getElementById(`${bombon.id}`);
-    agregaBombones.onclick = () => {
-       
+    agregaBombones.onclick = () => {   
+
         const repite = carrito.some((repiteProd)=>repiteProd.id === bombon.id);
         if (repite) {           
             let objeto = carrito.find(item => item.id == bombon.id)
@@ -147,18 +156,26 @@ const prductosBombones = bombones.forEach((bombon)=> {
         });
         };       
         pintarCarrito();
-        contarCarrito();                         
+        contarCarrito(); 
+        guardaStorage();
+        Toastify({
+            text: "Agregado al Carrito",            
+            duration: 2000,
+            style: {
+                background: "rgb(63,94,251)",
+                background: "radial-gradient(circle, rgba(63,94,251,1) 4%, rgba(164,34,131,1) 85%)",                                
+              },            
+            }).showToast();                                      
     };   
 });
-
 //CONSTRUCCION CARRITO EVENTOS CLICK
 const verCarrito = document.getElementById("ver-carrito");
 const modalCarrito = document.getElementById("modal-container");
 const contadorCarrito = document.getElementById("contadorCarrito");
+const cerrarCarrito = document.getElementById("cerrarCarrito");
 
-const pintarCarrito = () => {
-    
-    modalCarrito.innerHTML = ""
+const pintarCarrito = () => {    
+    modalCarrito.innerHTML = "";    
     carrito.forEach((product)=>{
         let carritoCont = document.createElement("div");
         carritoCont.className= "modal-cuerpo-carrito";
@@ -166,49 +183,59 @@ const pintarCarrito = () => {
         <img src="${product.img}">
         <h3>${product.nombre}</h3>
         <p>$${product.precio}</p>
-        <input type="number" min = "1" value=${product.cantidad} id="cantidad${product.id}">                  
+        <input type="number" min = "1" value=${product.cantidad} id="cantidad${product.id}">Kg/unid.                  
         `       
          modalCarrito.append(carritoCont);
         
-        let inputCantidad = document.getElementById(`cantidad${product.id}`)
-        
-        inputCantidad.onclick = ()=>{
+        let inputCantidad = document.getElementById(`cantidad${product.id}`);               
+        inputCantidad.onchange = ()=>{
             console.log(inputCantidad.value);
-            let objeto = carrito.find(item => item.id == product.id)
-            console.log(objeto);
-            objeto.cantidad = parseInt(inputCantidad.value)
-            actualizarCarrito()
+            let articulo = carrito.find(item => item.id == product.id)
+            console.log(articulo);
+            articulo.cantidad = parseInt(inputCantidad.value)
+            actualizarCarrito();
         };
-                                  
+                            
         let eliminaProducto = document.createElement("span");
         eliminaProducto.innerText = "❌";
         eliminaProducto.className = "delete-product"
         carritoCont.append(eliminaProducto);
         eliminaProducto.onclick = eliminarArticulo;
                 
-    });
-    actualizarCarrito()
+    });          
+    actualizarCarrito();
+    cerrarCarrito.onclick = ()=>{
+        alert('Holaaaaaa')
+    };        
 };
 
+//FUNCIONES
 function actualizarCarrito(){
     let total = document.getElementById('total-carrito')
-    total.innerText = carrito.reduce((acc, el) => acc + (el.precio * el.cantidad), 0)
-}
+    total.innerText = carrito.reduce((acc, el) => acc + (el.precio * el.cantidad), 0);    
+};
 
 const eliminarArticulo = () => {
     const foundId = carrito.find((el)=>el.id);    
     carrito = carrito.filter((carritoId)=> {
         return carritoId !== foundId        
-    });   
+    });
+    guardaStorage();      
     pintarCarrito();
-    actualizarCarrito();
-    contarCarrito();
+    actualizarCarrito();        
+    contarCarrito();     
 };
-    
+//LOCAL STORAGE
 const contarCarrito = ()=> {
     contadorCarrito.style.display ="block"
-    contadorCarrito.innerText = carrito.length;
- }
+    const carritoLenght = carrito.length;
+    localStorage.setItem("carritoLenght", JSON.stringify(carritoLenght));
+    contadorCarrito.innerText = JSON.parse(localStorage.getItem("carritoLenght"));
+ };
+ contarCarrito();
+ pintarCarrito();
+
+const guardaStorage = () => localStorage.setItem("carrito", JSON.stringify(carrito));
 
 
 
