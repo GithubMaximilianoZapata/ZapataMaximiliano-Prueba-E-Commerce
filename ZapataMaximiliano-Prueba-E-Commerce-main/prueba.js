@@ -1,4 +1,4 @@
-// INSTANCIAR CLASE 
+/// INSTANCIAR CLASE 
 class Delicatessen {
     constructor(id, img, nombre, descripcion, precio, cantidad) {
         this.id = id;
@@ -205,7 +205,11 @@ const pintarCarrito = () => {
     });          
     actualizarCarrito();
     cerrarCarrito.onclick = ()=>{
-        alert('Holaaaaaa')
+        Swal.fire(
+            'Cerraste tu Carrito',
+            'Quieres seguir comprando?',
+            'question'
+          )
     };        
 };
 
@@ -236,13 +240,6 @@ const contarCarrito = ()=> {
  pintarCarrito();
 
 const guardaStorage = () => localStorage.setItem("carrito", JSON.stringify(carrito));
-
-Swal.fire(
-    'The Internet?',
-    'That thing is still around?',
-    'question'
-  )
-
 
 
 
